@@ -17,18 +17,22 @@ load_package <- function(x) {
 
 ################################################################################
 # install necessary packages
-load_package("lubridate")
-load_package("reshape2")
-load_package("stringr")
-load_package("plyr")
-load_package("tidyr")
+load_package("lubridate") # for easy date-handling
+load_package("reshape2")  # for reshaping data structures
+load_package("stringr")   # for string processing
+load_package("dplyr")     # for data manipulation and querying
+load_package("tidyr")     # for tidying-up data
+load_package("xtable")    # for pretty exporting of data
 
 # load necessary libraries
 library(lubridate)
 library(reshape2)
 library(stringr)
-library(plyr)
+library(dplyr)
 library(tidyr)
+
+# source other R scripts
+source("xtable.r")
 
 ################################################################################
 ## UTILITY FUNCTIONS
