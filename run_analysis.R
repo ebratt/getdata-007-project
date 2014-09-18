@@ -31,9 +31,6 @@ library(stringr)
 library(dplyr)
 library(tidyr)
 
-# source other R scripts
-source("xtable.r")
-
 ################################################################################
 ## UTILITY FUNCTIONS
 ## function that reads a file and returns a data.frame
