@@ -18,23 +18,16 @@ load_package <- function(x) {
 ################################################################################
 # install necessary packages
 load_package("lubridate") # for easy date-handling
-load_package("reshape2")  # for reshaping data structures
-load_package("stringr")   # for string processing
-load_package("dplyr")     # for data manipulation and querying
-load_package("tidyr")     # for tidying-up data
-load_package("xtable")    # for pretty exporting of data
+load_package("dplyr")     # for data manipulation (ie, joining data frames)
 
 # load necessary libraries
 library(lubridate)
-library(reshape2)
-library(stringr)
 library(dplyr)
-library(tidyr)
 
 ################################################################################
 ## UTILITY FUNCTIONS
 ## function that reads a file and returns a data.frame
-read_data_file <- function(x) {
+read_file <- function(x) {
     result <- read.table(x,header=F,strip.white=T)
     return(result)
 }
@@ -47,32 +40,58 @@ concat <- function(x1,x2) {
 
 ################################################################################
 ## define some global variables
-DATA_DIR    <- "./data"
-DATASET_DIR <- concat(DATA_DIR,"/UCI HAR Dataset")
-TEST_DIR    <- concat(DATASET_DIR,"/test")
-TRAIN_DIR   <- concat(DATASET_DIR,"/train")
+DATA_DIR          <- "./data"
+DATASET_DIR       <- concat(DATA_DIR,"/UCI HAR Dataset")
+TEST_DIR          <- concat(DATASET_DIR,"/test")
+TRAIN_DIR         <- concat(DATASET_DIR,"/train")
+TEST_FILE         <- concat(TEST_DIR,"/X_test.txt")
+TEST_LABELS_FILE  <- concat(TEST_DIR,"/Y_test.txt")
+TRAIN_FILE        <- concat(TRAIN_DIR,"/X_train.txt")
+TRAIN_LABELS_FILE <- concat(TRAIN_DIR,"/Y_train.txt")
+FEATURES_FILE     <- concat(DATASET_DIR,"/features.txt")
+DATA_FILE         <- concat(DATA_DIR,"/data.zip")
+FILE_URL          <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+LABELS_FILE       <- concat(DATASET_DIR,"/activity_labels.txt")
+EXTRACT_FILE      <- concat(DATA_DIR,"/tidy_data.txt")
 
 ################################################################################
 # define the data archive URL
-fileURL <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
 # ensure the local data directory exists
 if (!file.exists(DATA_DIR)) { dir.create(DATA_DIR) }
 # log the date the archive was downloaded
 dateDownloaded <- now()
 # download the archive file
-download.file(fileURL,destfile = concat(DATA_DIR,"/data.zip"))
+download.file(FILE_URL,destfile = DATA_FILE)
 # unzip the archive file to the data directory
-unzip(concat(DATA_DIR,"/data.zip"),exdir = DATA_DIR)
+unzip(DATA_FILE,exdir = DATA_DIR)
 
 ################################################################################
 # step 1. Merge the training and the test sets to create one data set.         #
 ################################################################################
-test  <- read_data_file(concat(TEST_DIR,"/X_test.txt"))
-train <- read_data_file(concat(TRAIN_DIR,"/X_train.txt"))
-data  <- rbind(test,train)
+test  <- read_file(TEST_FILE)
+train <- read_file(TRAIN_FILE)
+
+# replace activity labels
+labels              <- read_file(LABELS_FILE)
+names(labels)       <- c("activityid", "activity")
+test_labels         <- read_file(TEST_LABELS_FILE)
+names(test_labels)  <- c("activityid")
+test_labels         <- inner_join(test_labels, labels)
+train_labels        <- read_file(TRAIN_LABELS_FILE)
+names(train_labels) <- c("activityid")
+train_labels        <- inner_join(train_labels, labels)
+
+# add a column to each data table for labels
+test$activityid  <- test_labels$activityid
+test$activity    <- test_labels$activity
+train$activityid <- train_labels$activityid
+train$activity   <- train_labels$activity
+
+# combine test and train data
+data <- rbind(test,train)
 
 # clean-up the feature names
-cols<-read_data_file(concat(DATASET_DIR,"/features.txt"))
+cols<-read_file(FEATURES_FILE)
 cols<-as.vector(cols[,2])                              # convert to a character vector
 cols<-gsub("-","",cols)                                # remove -'s
 cols<-gsub("^t","Time",cols)                           # replace t with Time
@@ -106,4 +125,33 @@ cols<-gsub("\\)","",cols)                              # remove )'s
 cols<-gsub(",","to",cols)                              # remove ,'s
 
 # apply features to data
+cols <- c(cols, "activityid", "activity")
 names(data) <- cols
+data[1:3, 560:563]
+
+################################################################################
+# step 2. Extracts only the measurements on the mean and standard deviation    #
+#         for each measurement.                                                #
+################################################################################
+mean_cols    <- grep("Mean", cols,value=T)
+STD_cols     <- grep("STD", cols,value=T)
+extract_cols <- c(mean_cols, STD_cols, "activityid", "activity")
+extract      <- data[,extract_cols]
+
+################################################################################
+# step 3. Use descriptive activity names to name the activities in the data set#
+################################################################################
+summary(extract$activity)
+
+################################################################################
+# step 4. Appropriately labels the data set with descriptive variable names.   #
+################################################################################
+names(extract)
+
+################################################################################
+# step 5. From the data set in step 4, creates a second, independent tidy data #
+#         set with the average of each variable for each activity and each     #
+#         subject.                                                             #
+################################################################################
+tidy_extract <- extract[, names(extract) != "activityid"] %>% group_by(activity) %>% summarise_each(funs(mean))
+write.table(tidy_extract, file=EXTRACT_FILE,sep=",",row.name=FALSE)
