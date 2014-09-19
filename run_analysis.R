@@ -55,7 +55,6 @@ LABELS_FILE       <- concat(DATASET_DIR,"/activity_labels.txt")
 EXTRACT_FILE      <- concat(DATA_DIR,"/tidy_data.txt")
 
 ################################################################################
-# define the data archive URL
 # ensure the local data directory exists
 if (!file.exists(DATA_DIR)) { dir.create(DATA_DIR) }
 # log the date the archive was downloaded
@@ -127,7 +126,6 @@ cols<-gsub(",","to",cols)                              # remove ,'s
 # apply features to data
 cols <- c(cols, "activityid", "activity")
 names(data) <- cols
-data[1:3, 560:563]
 
 ################################################################################
 # step 2. Extracts only the measurements on the mean and standard deviation    #
@@ -141,12 +139,12 @@ extract      <- data[,extract_cols]
 ################################################################################
 # step 3. Use descriptive activity names to name the activities in the data set#
 ################################################################################
-summary(extract$activity)
+#summary(extract$activity)
 
 ################################################################################
 # step 4. Appropriately labels the data set with descriptive variable names.   #
 ################################################################################
-names(extract)
+#names(extract)
 
 ################################################################################
 # step 5. From the data set in step 4, creates a second, independent tidy data #
