@@ -10,13 +10,13 @@ This code book "...describes the variables, the data, and any transformations or
 
 Raw data comes from:
 
-"=================================================================="
+==================================================================
 
 Human Activity Recognition Using Smartphones Dataset
 
 Version 1.0
 
-"=================================================================="
+==================================================================
 
 Jorge L. Reyes-Ortiz, Davide Anguita, Alessandro Ghio, Luca Oneto.
 
