@@ -8,11 +8,11 @@ Run the `run_analysis.R` script with R (or RStudio)
 
 #### What will happen when I do this?
 The `run_analysis.R` script will perform the following:
-1. Load the packages: `lubridate` and `dplyr`, 
-2. Create a directory called `data` in your working directory, 
-2. Download an archive file called `data.zip` inside the `data` directory, 
-3. Unzip the `data.zip` file into another sub-folder called `UCI HAR Dataset`, 
-4. Inside the `UCI HAR Dataset` sub-folder you will see the following:
+- Load the packages: `lubridate` and `dplyr`, 
+- Create a directory called `data` in your working directory, 
+- Download an archive file called `data.zip` inside the `data` directory, 
+- Unzip the `data.zip` file into another sub-folder called `UCI HAR Dataset`, 
+- Inside the `UCI HAR Dataset` sub-folder you will see the following:
   - `activity_labels.txt`
   - `features.txt`
   - `features_info.txt`
