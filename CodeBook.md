@@ -10,13 +10,13 @@ This code book "...describes the variables, the data, and any transformations or
 
 Raw data comes from:
 
-==================================================================
+......................................................................
 
 Human Activity Recognition Using Smartphones Dataset
 
 Version 1.0
 
-==================================================================
+......................................................................
 
 Jorge L. Reyes-Ortiz, Davide Anguita, Alessandro Ghio, Luca Oneto.
 
@@ -30,7 +30,7 @@ activityrecognition@smartlab.ws
 
 www.smartlab.ws
 
-"=================================================================="
+......................................................................
 
 [1] Davide Anguita, Alessandro Ghio, Luca Oneto, Xavier Parra and Jorge L. Reyes-Ortiz. Human Activity Recognition on Smartphones using a Multiclass Hardware-Friendly Support Vector Machine. International Workshop of Ambient Assisted Living (IWAAL 2012). Vitoria-Gasteiz, Spain. Dec 2012
 
@@ -38,7 +38,7 @@ www.smartlab.ws
 
 For each record it is provided:
 
-"======================================"
+......................................................................
 
 - Triaxial acceleration from the accelerometer (total acceleration) and the estimated body acceleration.
 - Triaxial Angular velocity from the gyroscope. 
@@ -51,7 +51,7 @@ For each record it is provided:
 
 The dataset includes the following files:
 
-"========================================="
+......................................................................
 
 - 'README.txt'
 - 'features_info.txt': Shows information about the variables used on the feature vector.
