@@ -70,7 +70,7 @@ Each feature vector is a row on the text file.
 
 (taken from the `README.txt` file)
 
-####The variables, the data, and any transformations or work that [I] performed to clean up the data
+####The variables, the data, and any transformations or work that I performed to clean up the data
 #####Functions
 `load_package()` is a function that checks to see if a package is installed and,if not,installs it
 
@@ -83,3 +83,59 @@ load_package <- function(x) {
 }
 ```
 
+`read_file()` is a function that reads a file and returns a data.frame
+```
+read_file <- function(x) {
+    result <- read.table(x,header=F,strip.white=T)
+    return(result)
+}
+```
+
+`concat()` is a function that concatenates strings (useful for directory paths)
+```
+concat <- function(x1,x2) {
+  result <- paste(x1,x2,sep="")
+  return(result)
+}
+```
+
+#####Variables
+- `DATA_DIR`          data directory created by `run_analysis.R`
+- `DATASET_DIR`       dataset directory
+- `TEST_DIR`          directory storing the test data
+- `TRAIN_DIR`         directory storing the training data
+- `TEST_FILE`         test data
+- `TEST_LABELS_FILE`  test data labels
+- `TRAIN_FILE`        training data
+- `TRAIN_LABELS_FILE` training data labels
+- `FEATURES_FILE`     features data
+- `DATA_FILE`         downloaded archive (.zip) file
+- `FILE_URL`          connection to the archived data source
+- `LABELS_FILE`       activity labels data
+- `EXTRACT_FILE`      output file
+
+#####Data
+- `test`              data.frame of test data
+- `train`             data.frame of training data
+- `labels`            data.frame of activity labels data
+- `test_labels`       data.frame of activity labels for each test observation
+- `train_labels`      data.frame of activity labels for each training observation
+- `data`              data.frame of combined test and training data
+- `cols`              vector of feature columns
+- `mean_cols`         vector of column names containing `%Mean%`
+- `STD_cols`          vector of column names containing `%STD%`
+- `extract_cols`      vector of column names for the extract file
+- `extract`           data.frame of a the `data` including only the `extract_cols`
+- `tidy_extract`      tbl_df (from the `dplyr` package) containing the output
+
+#####Transformations
+- set column names of `labels`
+- set column names of `test_labels`
+- set column names of `train_labels`
+- joined `labels` with `test_labels` and `train_labels` to get the activity type for each test and training observation
+- added `activityid` and `activity` columns to `test` and `train` data.frame(s)
+- renamed the feature names in `cols` to make more sense (I decided to use mixed-case due to the length of the column names)
+- set column names of `data`
+- created `extract` including only the `extract_cols`
+- created `tidy_extract` using `group_by()` and `summarise_each` from `dplyr` package
+- saved the `tidy_extract` as a comma-separated value in `tidy_data.txt`
