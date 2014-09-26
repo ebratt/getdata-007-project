@@ -62,7 +62,11 @@ if (!file.exists(DATA_DIR)) { dir.create(DATA_DIR) }
 # log the date the archive was downloaded
 dateDownloaded <- now()
 # download the archive file
-download.file(FILE_URL,destfile = DATA_FILE)
+if (.Platform$OS.type == "unix") {
+    download.file(FILE_URL,destfile = DATA_FILE,method="curl")
+} else {
+    download.file(FILE_URL,destfile = DATA_FILE)
+}
 # unzip the archive file to the data directory
 unzip(DATA_FILE,exdir = DATA_DIR)
 
