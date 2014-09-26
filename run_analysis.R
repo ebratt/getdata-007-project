@@ -41,18 +41,20 @@ concat <- function(x1,x2) {
 ################################################################################
 ## define some global variables
 DATA_DIR          <- "./data"
-DATASET_DIR       <- concat(DATA_DIR,"/UCI HAR Dataset")
-TEST_DIR          <- concat(DATASET_DIR,"/test")
-TRAIN_DIR         <- concat(DATASET_DIR,"/train")
-TEST_FILE         <- concat(TEST_DIR,"/X_test.txt")
-TEST_LABELS_FILE  <- concat(TEST_DIR,"/Y_test.txt")
-TRAIN_FILE        <- concat(TRAIN_DIR,"/X_train.txt")
-TRAIN_LABELS_FILE <- concat(TRAIN_DIR,"/Y_train.txt")
-FEATURES_FILE     <- concat(DATASET_DIR,"/features.txt")
-DATA_FILE         <- concat(DATA_DIR,"/data.zip")
-FILE_URL          <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
-LABELS_FILE       <- concat(DATASET_DIR,"/activity_labels.txt")
-EXTRACT_FILE      <- concat(DATA_DIR,"/tidy_data.txt")
+DATASET_DIR         <- concat(DATA_DIR,"/UCI HAR Dataset")
+TEST_DIR            <- concat(DATASET_DIR,"/test")
+TRAIN_DIR           <- concat(DATASET_DIR,"/train")
+TEST_FILE           <- concat(TEST_DIR,"/X_test.txt")
+TEST_LABELS_FILE    <- concat(TEST_DIR,"/Y_test.txt")
+TEST_SUBJECTS_FILE  <- concat(TEST_DIR,"/subject_test.txt")
+TRAIN_FILE          <- concat(TRAIN_DIR,"/X_train.txt")
+TRAIN_LABELS_FILE   <- concat(TRAIN_DIR,"/Y_train.txt")
+TRAIN_SUBJECTS_FILE <- concat(TRAIN_DIR,"/subject_train.txt")
+FEATURES_FILE       <- concat(DATASET_DIR,"/features.txt")
+DATA_FILE           <- concat(DATA_DIR,"/data.zip")
+FILE_URL            <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+LABELS_FILE         <- concat(DATASET_DIR,"/activity_labels.txt")
+EXTRACT_FILE        <- concat(DATA_DIR,"/tidy_data.txt")
 
 ################################################################################
 # ensure the local data directory exists
@@ -85,6 +87,14 @@ test$activityid  <- test_labels$activityid
 test$activity    <- test_labels$activity
 train$activityid <- train_labels$activityid
 train$activity   <- train_labels$activity
+
+# add a column to each data table for subjects
+test_subjects         <- read_file(TEST_SUBJECTS_FILE)
+names(test_subjects)  <- c("subject")
+test$subject          <- test_subjects$subject
+train_subjects        <- read_file(TRAIN_SUBJECTS_FILE)
+names(train_subjects) <- c("subject")
+train$subject         <- train_subjects$subject
 
 # combine test and train data
 data <- rbind(test,train)
@@ -124,7 +134,7 @@ cols<-gsub("\\)","",cols)                              # remove )'s
 cols<-gsub(",","to",cols)                              # remove ,'s
 
 # apply features to data
-cols <- c(cols, "activityid", "activity")
+cols <- c(cols, "activityid", "activity", "subject")
 names(data) <- cols
 
 ################################################################################
@@ -133,7 +143,7 @@ names(data) <- cols
 ################################################################################
 mean_cols    <- grep("Mean", cols,value=T)
 STD_cols     <- grep("STD", cols,value=T)
-extract_cols <- c(mean_cols, STD_cols, "activityid", "activity")
+extract_cols <- c(mean_cols, STD_cols, "activityid", "activity", "subject")
 extract      <- data[,extract_cols]
 
 ################################################################################
@@ -151,5 +161,5 @@ extract      <- data[,extract_cols]
 #         set with the average of each variable for each activity and each     #
 #         subject.                                                             #
 ################################################################################
-tidy_extract <- extract[, names(extract) != "activityid"] %>% group_by(activity) %>% summarise_each(funs(mean))
+tidy_extract <- extract[, names(extract) != "activityid"] %>% group_by(activity, subject) %>% summarise_each(funs(mean))
 write.table(tidy_extract, file=EXTRACT_FILE,sep=",",row.name=FALSE)
